@@ -51,6 +51,10 @@ test.describe('Login - La Rionegrina UAT', () => {
 
     console.log('✅ Credenciales encontradas, procediendo con el login...');
 
+    // Guardar URL inicial
+    const initialUrl = page.url();
+    console.log('📍 URL inicial:', initialUrl);
+
     // Completar formulario de login usando el primer input visible
     await page.locator('#nroDocu').first().fill(username);
     await page.locator('#clave').first().fill(password);
@@ -62,17 +66,41 @@ test.describe('Login - La Rionegrina UAT', () => {
     
     console.log('🖱️ Click en INGRESAR ejecutado');
     
-    // Esperar navegación o cambio de estado
-    await page.waitForTimeout(3000);
+    // Esperar a que la URL cambie o que aparezca un elemento de la página home
+    try {
+      // Esperar navegación con timeout de 10 segundos
+      await page.waitForURL(/.*\/home/, { timeout: 10000 });
+      console.log('✅ Navegación a /home exitosa');
+    } catch (error) {
+      // Si no navega a /home, capturar el estado actual
+      const currentUrl = page.url();
+      console.log('❌ No se navegó a /home');
+      console.log('📍 URL actual:', currentUrl);
+      
+      // Tomar screenshot del error
+      await page.screenshot({ path: 'test-results/login-fallido.png', fullPage: true });
+      
+      // Buscar mensajes de error en la página
+      const errorMessages = await page.locator('.error, .alert-danger, [class*="error"]').allTextContents();
+      if (errorMessages.length > 0) {
+        console.log('⚠️ Mensajes de error encontrados:', errorMessages);
+      }
+      
+      // Fallar el test
+      throw new Error(`Login falló: Se esperaba navegar a /home pero la URL es ${currentUrl}`);
+    }
     
-    // Verificar que ya no estamos en la página de login
-    const currentUrl = page.url();
-    console.log('📍 URL después del login:', currentUrl);
+    // Verificar que estamos en la página home
+    const finalUrl = page.url();
+    console.log('📍 URL después del login:', finalUrl);
     
-    // Tomar screenshot como evidencia
+    // Verificar que la URL contiene "home"
+    expect(finalUrl).toContain('/home');
+    
+    // Tomar screenshot como evidencia de éxito
     await page.screenshot({ path: 'test-results/login-exitoso.png', fullPage: true });
     
-    console.log('✅ Login completado - Screenshot guardado');
+    console.log('✅ Login exitoso verificado - Screenshot guardado');
   });
 
   test('Debería mostrar/ocultar contraseña al hacer click en el ícono', async ({ page }) => {
