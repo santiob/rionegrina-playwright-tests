@@ -35,31 +35,44 @@ test.describe('Login - La Rionegrina UAT', () => {
     const username = process.env.TEST_USERNAME;
     const password = process.env.TEST_PASSWORD;
 
+    // Debug: Mostrar estado de las variables
+    console.log('🔍 DEBUG - Username existe:', !!username);
+    console.log('🔍 DEBUG - Password existe:', !!password);
+    console.log('🔍 DEBUG - Username length:', username ? username.length : 0);
+    console.log('🔍 DEBUG - Password length:', password ? password.length : 0);
+
     if (!username || !password) {
+      console.log('⚠️ Test saltado: Credenciales no configuradas');
+      console.log('💡 Tip: Configura TEST_USERNAME y TEST_PASSWORD en GitHub Secrets');
+      console.log('💡 O crea un archivo .env local con estas variables');
       test.skip();
-      console.log('⚠️ Test saltado: No hay credenciales configuradas en .env');
       return;
     }
+
+    console.log('✅ Credenciales encontradas, procediendo con el login...');
 
     // Completar formulario de login usando el primer input visible
     await page.locator('#nroDocu').first().fill(username);
     await page.locator('#clave').first().fill(password);
     
+    console.log('📝 Formulario completado');
+    
     // Click en el botón de login
     await page.click('button:has-text("INGRESAR")');
+    
+    console.log('🖱️ Click en INGRESAR ejecutado');
     
     // Esperar navegación o cambio de estado
     await page.waitForTimeout(3000);
     
     // Verificar que ya no estamos en la página de login
-    // (ajustar según el comportamiento real de la aplicación)
     const currentUrl = page.url();
     console.log('📍 URL después del login:', currentUrl);
     
     // Tomar screenshot como evidencia
     await page.screenshot({ path: 'test-results/login-exitoso.png', fullPage: true });
     
-    console.log('✅ Login completado');
+    console.log('✅ Login completado - Screenshot guardado');
   });
 
   test('Debería mostrar/ocultar contraseña al hacer click en el ícono', async ({ page }) => {
