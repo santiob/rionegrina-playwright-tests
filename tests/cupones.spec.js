@@ -59,8 +59,8 @@ test.describe('Emisión de Cupones - Quiniela Tradicional - La Rionegrina UAT', 
     console.log('✅ Paso 3: Navegación a pantalla de sorteos exitosa');
     
     // Esperar a que cargue completamente la página
-    await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(2000);
+   // await page.waitForLoadState('networkidle');
+   // await page.waitForTimeout(2000);
     
     await page.screenshot({ path: 'test-results/quiniela-02-sorteos.png', fullPage: true });
 
