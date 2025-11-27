@@ -57,13 +57,57 @@ test.describe('Emisión de Cupones - Quiniela Tradicional - La Rionegrina UAT', 
     // Paso 3: Verificar navegación a /juego/Quinielatradicional
     await page.waitForURL(/.*\/juego\/Quinielatradicional/i, { timeout: 10000 });
     console.log('✅ Paso 3: Navegación a pantalla de sorteos exitosa');
+    
+    // Esperar a que cargue completamente la página
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+    
     await page.screenshot({ path: 'test-results/quiniela-02-sorteos.png', fullPage: true });
 
-    // Paso 4: Click en botón sorteo Nocturna
+    // Paso 4: Click en botón sorteo Nocturna - con múltiples variantes
     console.log('🖱️ Paso 4: Seleccionando sorteo Nocturna...');
-    const nocturnaButton = page.locator('button:has-text("Nocturna"), [class*="nocturna"]').first();
+    
+    // Intentar múltiples selectores para encontrar Nocturna
+    const nocturnaSelectors = [
+      'button:has-text("Nocturna")',
+      'a:has-text("Nocturna")',
+      'div:has-text("Nocturna")',
+      '[class*="nocturna"]',
+      'button:has-text("NOCTURNA")',
+      'text=Nocturna',
+      '[data-sorteo*="nocturna"]',
+      '[id*="nocturna"]'
+    ];
+    
+    let nocturnaButton = null;
+    let selectorUsado = '';
+    
+    for (const selector of nocturnaSelectors) {
+      const element = page.locator(selector).first();
+      const visible = await element.isVisible().catch(() => false);
+      
+      if (visible) {
+        nocturnaButton = element;
+        selectorUsado = selector;
+        console.log(`✅ Elemento Nocturna encontrado con selector: ${selector}`);
+        break;
+      }
+    }
+    
+    if (!nocturnaButton) {
+      console.log('❌ No se encontró el botón Nocturna con ningún selector');
+      console.log('📸 Tomando screenshot para análisis...');
+      await page.screenshot({ path: 'test-results/quiniela-02-error-nocturna.png', fullPage: true });
+      
+      // Listar todos los elementos visibles que contengan texto
+      const allText = await page.locator('button, a, div[class*="sorteo"], div[class*="card"]').allTextContents();
+      console.log('📋 Elementos encontrados en la página:', allText);
+      
+      throw new Error('No se pudo encontrar el botón/elemento Nocturna');
+    }
+    
     await nocturnaButton.click();
-    console.log('✅ Sorteo Nocturna seleccionado');
+    console.log(`✅ Sorteo Nocturna seleccionado usando: ${selectorUsado}`);
     
     // Esperar que se abra la pantalla de carga de datos
     await page.waitForTimeout(2000);
