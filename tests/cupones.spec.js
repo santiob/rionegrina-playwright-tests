@@ -59,55 +59,36 @@ test.describe('Emisión de Cupones - Quiniela Tradicional - La Rionegrina UAT', 
     console.log('✅ Paso 3: Navegación a pantalla de sorteos exitosa');
     
     // Esperar a que cargue completamente la página
-   // await page.waitForLoadState('networkidle');
-   // await page.waitForTimeout(2000);
+    await page.waitForTimeout(3000);
     
     await page.screenshot({ path: 'test-results/quiniela-02-sorteos.png', fullPage: true });
 
-    // Paso 4: Click en botón sorteo Nocturna - con múltiples variantes
+    // Paso 4: Click en sorteo Nocturna
     console.log('🖱️ Paso 4: Seleccionando sorteo Nocturna...');
     
-    // Intentar múltiples selectores para encontrar Nocturna
-    const nocturnaSelectors = [
-      'button:has-text("Nocturna")',
-      'a:has-text("Nocturna")',
-      'div:has-text("Nocturna")',
-      '[class*="nocturna"]',
-      'button:has-text("NOCTURNA")',
-      'text=Nocturna',
-      '[data-sorteo*="nocturna"]',
-      '[id*="nocturna"]'
-    ];
+    // Buscar el div que contiene el h6 con texto "Nocturna"
+    // El selector busca cualquier div que contenga un h6 con el texto "Nocturna"
+    const nocturnaContainer = page.locator('div:has(h6.fontDescEve:text-is("Nocturna"))').first();
     
-    let nocturnaButton = null;
-    let selectorUsado = '';
+    // Verificar que existe
+    const exists = await nocturnaContainer.isVisible().catch(() => false);
     
-    for (const selector of nocturnaSelectors) {
-      const element = page.locator(selector).first();
-      const visible = await element.isVisible().catch(() => false);
-      
-      if (visible) {
-        nocturnaButton = element;
-        selectorUsado = selector;
-        console.log(`✅ Elemento Nocturna encontrado con selector: ${selector}`);
-        break;
-      }
-    }
-    
-    if (!nocturnaButton) {
-      console.log('❌ No se encontró el botón Nocturna con ningún selector');
-      console.log('📸 Tomando screenshot para análisis...');
+    if (!exists) {
+      console.log('❌ No se encontró el contenedor de Nocturna');
       await page.screenshot({ path: 'test-results/quiniela-02-error-nocturna.png', fullPage: true });
       
-      // Listar todos los elementos visibles que contengan texto
-      const allText = await page.locator('button, a, div[class*="sorteo"], div[class*="card"]').allTextContents();
-      console.log('📋 Elementos encontrados en la página:', allText);
+      // Debug: listar todos los h6
+      const allH6 = await page.locator('h6.fontDescEve').allTextContents();
+      console.log('📋 Todos los h6.fontDescEve encontrados:', allH6);
       
-      throw new Error('No se pudo encontrar el botón/elemento Nocturna');
+      throw new Error('No se encontró el contenedor de Nocturna');
     }
     
-    await nocturnaButton.click();
-    console.log(`✅ Sorteo Nocturna seleccionado usando: ${selectorUsado}`);
+    console.log('✅ Contenedor de Nocturna encontrado');
+    
+    // Click en el contenedor
+    await nocturnaContainer.click();
+    console.log('✅ Sorteo Nocturna seleccionado');
     
     // Esperar que se abra la pantalla de carga de datos
     await page.waitForTimeout(2000);
