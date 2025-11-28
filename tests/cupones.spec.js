@@ -63,21 +63,48 @@ test.describe('Emisión de Cupones - Quiniela Tradicional - La Rionegrina UAT', 
     
     await page.screenshot({ path: 'test-results/quiniela-02-sorteos.png', fullPage: true });
 
-    // Paso 4: Click en sorteo Nocturna - usando getByText (forma más simple)
+    // Paso 4: Click en sorteo Nocturna - usando múltiples estrategias robustas
     console.log('🖱️ Paso 4: Seleccionando sorteo Nocturna...');
     
+    let clickExitoso = false;
+    
+    // Estrategia 1: div con texto Nocturna
     try {
-      // Buscar por texto "Nocturna" y hacer click
-      await page.getByText('Nocturna').click();
-      console.log('✅ Sorteo Nocturna seleccionado');
-    } catch (error) {
-      console.log('⚠️ No se pudo hacer click con getByText, intentando con el contenedor...');
+      await page.locator('div:has-text("Nocturna")').first().click({ timeout: 5000 });
+      console.log('✅ Sorteo Nocturna seleccionado (estrategia 1: div:has-text)');
+      clickExitoso = true;
+    } catch (e1) {
+      console.log('⚠️ Estrategia 1 falló, intentando estrategia 2...');
       
-      // Fallback: buscar el contenedor padre del texto Nocturna
-      const nocturnaElement = page.getByText('Nocturna');
-      const nocturnaContainer = nocturnaElement.locator('..');
-      await nocturnaContainer.click({ force: true });
-      console.log('✅ Sorteo Nocturna seleccionado (usando contenedor padre)');
+      // Estrategia 2: cualquier elemento con texto Nocturna
+      try {
+        await page.locator(':has-text("Nocturna")').first().click({ timeout: 5000 });
+        console.log('✅ Sorteo Nocturna seleccionado (estrategia 2: :has-text)');
+        clickExitoso = true;
+      } catch (e2) {
+        console.log('⚠️ Estrategia 2 falló, intentando estrategia 3...');
+        
+        // Estrategia 3: buscar el h6 y hacer click en el contenedor más cercano
+        try {
+          const h6Nocturna = page.locator('h6:has-text("Nocturna")').first();
+          await h6Nocturna.click({ timeout: 5000 });
+          console.log('✅ Sorteo Nocturna seleccionado (estrategia 3: h6 directo)');
+          clickExitoso = true;
+        } catch (e3) {
+          console.log('❌ Todas las estrategias fallaron');
+          
+          // Debug: mostrar todos los textos visibles en la página
+          const allTexts = await page.locator('h6, h5, h4, h3, div[class*="sc-"]').allTextContents();
+          console.log('📋 Textos encontrados en la página:', allTexts.slice(0, 20));
+          
+          await page.screenshot({ path: 'test-results/quiniela-02-error-nocturna.png', fullPage: true });
+          throw new Error('No se pudo hacer click en Nocturna con ninguna estrategia');
+        }
+      }
+    }
+    
+    if (!clickExitoso) {
+      throw new Error('No se pudo hacer click en Nocturna');
     }
     
     // Esperar que se abra la pantalla de carga de datos
