@@ -66,28 +66,51 @@ test.describe('Emisión de Cupones - Quiniela Tradicional - La Rionegrina UAT', 
     // Paso 4: Click en sorteo Nocturna
     console.log('🖱️ Paso 4: Seleccionando sorteo Nocturna...');
     
-    // Buscar el div que contiene el h6 con texto "Nocturna"
-    // El selector busca cualquier div que contenga un h6 con el texto "Nocturna"
-    const nocturnaContainer = page.locator('div:has(h6.fontDescEve:text-is("Nocturna"))').first();
+    // Buscar el div contenedor usando múltiples estrategias
+    let nocturnaContainer = null;
     
-    // Verificar que existe
-    const exists = await nocturnaContainer.isVisible().catch(() => false);
+    // Estrategia 1: Por clase específica que contiene h6 con texto Nocturna
+    nocturnaContainer = page.locator('div.sc-eCYdqJ.fgkpjp:has(h6:text-is("Nocturna"))').first();
+    let exists = await nocturnaContainer.isVisible().catch(() => false);
     
     if (!exists) {
-      console.log('❌ No se encontró el contenedor de Nocturna');
+      // Estrategia 2: Cualquier div con las clases row y justify-content-center que contenga h6 Nocturna
+      nocturnaContainer = page.locator('div.row.justify-content-center:has(h6.fontDescEve:text-is("Nocturna"))').first();
+      exists = await nocturnaContainer.isVisible().catch(() => false);
+    }
+    
+    if (!exists) {
+      // Estrategia 3: Buscar el h6 y subir al contenedor padre
+      const h6Nocturna = page.locator('h6.fontDescEve:text-is("Nocturna")');
+      exists = await h6Nocturna.isVisible().catch(() => false);
+      
+      if (exists) {
+        // Subir dos niveles en el DOM: h6 -> col-12 -> contenedor principal
+        nocturnaContainer = h6Nocturna.locator('../..');
+      }
+    }
+    
+    if (!exists && !await nocturnaContainer.isVisible().catch(() => false)) {
+      console.log('❌ No se encontró el contenedor de Nocturna con ninguna estrategia');
       await page.screenshot({ path: 'test-results/quiniela-02-error-nocturna.png', fullPage: true });
       
       // Debug: listar todos los h6
       const allH6 = await page.locator('h6.fontDescEve').allTextContents();
       console.log('📋 Todos los h6.fontDescEve encontrados:', allH6);
       
+      // Debug: listar todas las clases de divs en la página
+      const allDivClasses = await page.locator('div[class*="sc-"]').evaluateAll(divs => 
+        divs.map(d => d.className).slice(0, 10)
+      );
+      console.log('📋 Primeras 10 clases de divs encontradas:', allDivClasses);
+      
       throw new Error('No se encontró el contenedor de Nocturna');
     }
     
     console.log('✅ Contenedor de Nocturna encontrado');
     
-    // Click en el contenedor
-    await nocturnaContainer.click();
+    // Click en el contenedor con force para asegurar que funcione
+    await nocturnaContainer.click({ force: true });
     console.log('✅ Sorteo Nocturna seleccionado');
     
     // Esperar que se abra la pantalla de carga de datos
