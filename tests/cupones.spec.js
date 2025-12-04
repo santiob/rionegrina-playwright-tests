@@ -101,7 +101,8 @@ console.log('✅ Sorteo Nocturna seleccionado');
 
     // Paso 8: Click en botón +
     console.log('🖱️ Paso 8: Click en botón +...');
-    const botonMas = page.locator('button:has-text("+"), button[class*="agregar"], button[class*="add"]').first();
+    const botonMas = iframe.locator('button#btn-addJugada').first();
+    await botonMas.waitFor({ state: 'visible', timeout: 5000 });
     await botonMas.click();
     console.log('✅ Click en botón + ejecutado');
     
@@ -109,7 +110,8 @@ console.log('✅ Sorteo Nocturna seleccionado');
 
     // Paso 9: Click en botón Siguiente
     console.log('🖱️ Paso 9: Click en botón Siguiente...');
-    const botonSiguiente = page.locator('button:has-text("Siguiente"), button:has-text("SIGUIENTE")').first();
+    const botonSiguiente = iframe.locator('button#botonDerecha:has-text("Siguiente"), button.botonDerecha:has-text("Siguiente")').first();
+    await botonSiguiente.waitFor({ state: 'visible', timeout: 5000 });
     await botonSiguiente.click();
     console.log('✅ Click en Siguiente ejecutado');
     
@@ -120,7 +122,8 @@ console.log('✅ Sorteo Nocturna seleccionado');
 
     // Paso 10: Click en botón Rio Negro
     console.log('🖱️ Paso 10: Seleccionando extracto Rio Negro...');
-    const botonRioNegro = page.locator('button:has-text("Rio Negro"), button:has-text("Río Negro"), [class*="rio-negro"]').first();
+    const botonRioNegro = iframe.locator('label#btnExtracto:has-text("Rio Negro"), label.extractoButton:has-text("Rio Negro")').first();
+    await botonRioNegro.waitFor({ state: 'visible', timeout: 5000 });
     await botonRioNegro.click();
     console.log('✅ Extracto Rio Negro seleccionado');
     
@@ -128,7 +131,8 @@ console.log('✅ Sorteo Nocturna seleccionado');
 
     // Paso 11: Click en botón Jugar
     console.log('🖱️ Paso 11: Click en botón Jugar...');
-    const botonJugar = page.locator('button:has-text("Jugar"), button:has-text("JUGAR")').first();
+    const botonJugar = iframe.locator('button#botonDerecha:has-text("Jugar"), button.botonDerecha:has-text("Jugar")').first();
+    await botonJugar.waitFor({ state: 'visible', timeout: 5000 });
     await botonJugar.click();
     console.log('✅ Click en Jugar ejecutado');
     
