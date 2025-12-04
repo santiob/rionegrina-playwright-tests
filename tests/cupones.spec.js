@@ -73,23 +73,27 @@ await nocturnaH6.waitFor({ state: 'visible', timeout: 5000 });
 await nocturnaH6.click();
 console.log('✅ Sorteo Nocturna seleccionado');
 
-    // Paso 5: Completar campo Número con número aleatorio 0-99
+  // Paso 5: Completar campo Número con número aleatorio 0-99 (DENTRO DEL IFRAME)
     const numeroAleatorio = Math.floor(Math.random() * 100);
     console.log('🎲 Paso 5: Número aleatorio generado:', numeroAleatorio);
     
-    const campoNumero = page.locator('input[name="numero"], input[placeholder*="número"], input[id*="numero"]').first();
+    // Buscar el input asociado al label "Numero" dentro del iframe
+    const campoNumero = iframe.locator('label.bet-label:has-text("Numero")').locator('..').locator('input').first();
+    await campoNumero.waitFor({ state: 'visible', timeout: 5000 });
     await campoNumero.fill(numeroAleatorio.toString());
     console.log('✅ Campo Número completado:', numeroAleatorio);
 
-    // Paso 6: Completar campo Alcance con 10
+    // Paso 6: Completar campo Alcance con 10 (DENTRO DEL IFRAME)
     console.log('📝 Paso 6: Completando campo Alcance...');
-    const campoAlcance = page.locator('input[name="alcance"], input[placeholder*="alcance"], input[id*="alcance"]').first();
+    const campoAlcance = iframe.locator('label.bet-label:has-text("Alcance")').locator('..').locator('input').first();
+    await campoAlcance.waitFor({ state: 'visible', timeout: 5000 });
     await campoAlcance.fill('10');
     console.log('✅ Campo Alcance completado: 10');
 
-    // Paso 7: Completar campo Importe con 200
+    // Paso 7: Completar campo Importe con 200 (DENTRO DEL IFRAME)
     console.log('💰 Paso 7: Completando campo Importe...');
-    const campoImporte = page.locator('input[name="importe"], input[placeholder*="importe"], input[id*="importe"]').first();
+    const campoImporte = iframe.locator('label.bet-label:has-text("Importe")').locator('..').locator('input').first();
+    await campoImporte.waitFor({ state: 'visible', timeout: 5000 });
     await campoImporte.fill('200');
     console.log('✅ Campo Importe completado: 200');
 
