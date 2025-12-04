@@ -64,21 +64,14 @@ test.describe('Emisión de Cupones - Quiniela Tradicional - La Rionegrina UAT', 
     await page.screenshot({ path: 'test-results/quiniela-02-sorteos.png', fullPage: true });
 
 // Paso 4: Click en sorteo Nocturna DENTRO DEL IFRAME
-console.log('🖱️ Paso 4: Seleccionando sorteo Nocturna...');
+console.log('🖱️ Paso 4: Seleccionando sorteo Nocturna dentro del iframe...');
 
-// CLAVE: Usar frameLocator para acceder al iframe
 const iframe = page.frameLocator('iframe#zonaJuego');
 
-try {
-  const nocturnaH6 = iframe.locator('h6.fontDescEve:has-text("Nocturna")').first();
-  await nocturnaH6.waitFor({ state: 'visible', timeout: 5000 });
-  await nocturnaH6.click();
-  console.log('✅ Sorteo Nocturna seleccionado');
-} catch (error) {
-  // Estrategia alternativa
-  const nocturnaDiv = iframe.locator('div.sc-gsnTZi:has-text("Nocturna")').first();
-  await nocturnaDiv.click();
-}
+const nocturnaH6 = iframe.locator('h6.fontDescEve:has-text("Nocturna")').first();
+await nocturnaH6.waitFor({ state: 'visible', timeout: 5000 });
+await nocturnaH6.click();
+console.log('✅ Sorteo Nocturna seleccionado');
 
     // Paso 5: Completar campo Número con número aleatorio 0-99
     const numeroAleatorio = Math.floor(Math.random() * 100);
