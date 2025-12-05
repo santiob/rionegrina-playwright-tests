@@ -193,9 +193,10 @@ console.log('✅ Sorteo Nocturna seleccionado');
     await expect(page).toHaveURL(/.*\/plataforma\/home/);
     
     // Verificar que existe el botón de Quiniela Tradicional
-    const quinielaButton = page.locator('button:has-text("Quiniela Tradicional"), a:has-text("Quiniela Tradicional")').first();
-    const isVisible = await quinielaButton.isVisible().catch(() => false);
-    
+    const quinielaElement = page.locator('div.sc-jHcXXw:has-text("Quiniela tradicional")').first();
+    await quinielaElement.waitFor({ state: 'visible', timeout: 5000 });
+
+    const isVisible = await quinielaElement.isVisible();
     expect(isVisible).toBeTruthy();
     console.log('✅ Botón Quiniela Tradicional está visible');
     
