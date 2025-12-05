@@ -142,8 +142,13 @@ console.log('✅ Sorteo Nocturna seleccionado');
     // Paso 12: Validar popup del cupón y tomar captura
     console.log('📋 Paso 12: Validando popup del cupón...');
     
-    // Buscar el popup/modal del cupón
-    const cuponPopup = page.locator('[class*="modal"], [class*="popup"], [class*="cupon"]').first();
+    // Búsqueda específica DENTRO DEL IFRAME
+    const cuponPopup = iframe.locator('div#download.cuponFinal').first();
+    await cuponPopup.waitFor({ state: 'visible', timeout: 10000 });
+
+    // Verificar mensaje de éxito específico
+    const mensajeExito = iframe.locator('div.text-success:has-text("¡CUPON GENERADO!")').first();
+    await mensajeExito.waitFor({ state: 'visible', timeout: 5000 });
     
     // Verificar que el popup es visible
     const isVisible = await cuponPopup.isVisible().catch(() => false);
