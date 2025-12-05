@@ -145,10 +145,11 @@ console.log('✅ Sorteo Nocturna seleccionado');
     // Búsqueda específica DENTRO DEL IFRAME
     const cuponPopup = iframe.locator('div#download.cuponFinal').first();
     await cuponPopup.waitFor({ state: 'visible', timeout: 10000 });
-
+        
     // Verificar mensaje de éxito específico
     const mensajeExito = iframe.locator('div.text-success:has-text("¡CUPON GENERADO!")').first();
     await mensajeExito.waitFor({ state: 'visible', timeout: 5000 });
+    console.log('✅ Mensaje "¡CUPON GENERADO!" confirmado');
     
     // Verificar que el popup es visible
     const isVisible = await cuponPopup.isVisible().catch(() => false);
