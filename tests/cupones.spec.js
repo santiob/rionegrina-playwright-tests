@@ -47,6 +47,20 @@ test.describe('Emisión de Cupones - Quiniela Tradicional - La Rionegrina UAT', 
     await expect(page).toHaveURL(/.*\/plataforma\/home/);
     console.log('✅ Paso 1: En pantalla de juegos');
     await page.screenshot({ path: 'test-results/quiniela-01-home.png', fullPage: true });
+    
+    test('3. Debería validar elementos de la pantalla de juegos', async ({ page }) => {
+    // Verificar que estamos en /home
+    await expect(page).toHaveURL(/.*\/plataforma\/home/);
+    
+    // Verificar que existe el botón de Quiniela Tradicional
+    const quinielaButton = page.locator('button:has-text("Quiniela Tradicional"), a:has-text("Quiniela Tradicional")').first();
+    const isVisible = await quinielaButton.isVisible().catch(() => false);
+    
+    expect(isVisible).toBeTruthy();
+    console.log('✅ Botón Quiniela Tradicional está visible');
+    
+    // Tomar screenshot
+    await page.screenshot({ path: 'test-results/validacion-elementos-home.png', fullPage: true });
 
     // Paso 2: Click en botón Quiniela Tradicional
     console.log('🖱️ Paso 2: Buscando botón Quiniela Tradicional...');
@@ -184,22 +198,20 @@ console.log('✅ Sorteo Nocturna seleccionado');
       console.log('⚠️ Popup del cupón no encontrado, tomando screenshot del estado actual');
       await page.screenshot({ path: 'test-results/quiniela-06-error-popup.png', fullPage: true });
       
-      throw new Error('No se encontró el popup del cupón generado');
-    }
-  });
-
-  test('3. Debería validar elementos de la pantalla de juegos', async ({ page }) => {
+      throw new Error('No se encontró el popup del cupón generado'});
+     
+//  test('3. Debería validar elementos de la pantalla de juegos', async ({ page }) => {
     // Verificar que estamos en /home
-    await expect(page).toHaveURL(/.*\/plataforma\/home/);
+//   await expect(page).toHaveURL(/.*\/plataforma\/home/);
     
     // Verificar que existe el botón de Quiniela Tradicional
-    const quinielaButton = page.locator('button:has-text("Quiniela Tradicional"), a:has-text("Quiniela Tradicional")').first();
-    const isVisible = await quinielaButton.isVisible().catch(() => false);
+//    const quinielaButton = page.locator('button:has-text("Quiniela Tradicional"), a:has-text("Quiniela Tradicional")').first();
+//    const isVisible = await quinielaButton.isVisible().catch(() => false);
     
-    expect(isVisible).toBeTruthy();
-    console.log('✅ Botón Quiniela Tradicional está visible');
+//    expect(isVisible).toBeTruthy();
+//    console.log('✅ Botón Quiniela Tradicional está visible');
     
     // Tomar screenshot
-    await page.screenshot({ path: 'test-results/validacion-elementos-home.png', fullPage: true });
-  });
-});
+//    await page.screenshot({ path: 'test-results/validacion-elementos-home.png', fullPage: true });
+  
+
