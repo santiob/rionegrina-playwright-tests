@@ -8,7 +8,7 @@ on:
   schedule:
     # Ejecutar cada 6 horas
     - cron: '0 */6 * * *'
-  workflow_dispatch:
+  workflow_dispatch: [ generación-cupon-ok ]
     # Permitir ejecución manual
 
 jobs:
